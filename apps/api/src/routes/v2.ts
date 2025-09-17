@@ -18,6 +18,10 @@ import { concurrencyCheckController } from "../controllers/v2/concurrency-check"
 import { crawlStatusWSController } from "../controllers/v2/crawl-status-ws";
 import { extractController } from "../controllers/v2/extract";
 import { extractStatusController } from "../controllers/v2/extract-status";
+import { deepResearchController } from "../controllers/v2/deep-research";
+import { deepResearchStatusController } from "../controllers/v2/deep-research-status";
+import { generateLLMsTextController } from "../controllers/v2/generate-llmstxt";
+import { generateLLMsTextStatusController } from "../controllers/v2/generate-llmstxt-status";
 import {
   authMiddleware,
   checkCreditsMiddleware,
@@ -185,4 +189,34 @@ v2Router.get(
   "/team/queue-status",
   authMiddleware(RateLimiterMode.CrawlStatus),
   wrap(queueStatusController),
+);
+
+v2Router.post(
+  "/deep-research",
+  authMiddleware(RateLimiterMode.Extract),
+  countryCheck,
+  checkCreditsMiddleware(1),
+  blocklistMiddleware,
+  wrap(deepResearchController),
+);
+
+v2Router.get(
+  "/deep-research/:researchId",
+  authMiddleware(RateLimiterMode.ExtractStatus),
+  wrap(deepResearchStatusController),
+);
+
+v2Router.post(
+  "/generate-llmstxt",
+  authMiddleware(RateLimiterMode.Extract),
+  countryCheck,
+  checkCreditsMiddleware(1),
+  blocklistMiddleware,
+  wrap(generateLLMsTextController),
+);
+
+v2Router.get(
+  "/generate-llmstxt/:generationId",
+  authMiddleware(RateLimiterMode.ExtractStatus),
+  wrap(generateLLMsTextStatusController),
 );
